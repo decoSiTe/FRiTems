@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#e9ecef" />
+  <title>Katrina — Frozen Sticker Request</title>
+  <style>
+    :root{
+      --bg:#e9ecef;
+      --panel:#e9ecef;
+      --ink:#2f2b2e;
+      --muted:#6f6b6e;
+      --accent:#302b2f;
+      --light:#ffffff;
+      --dark:#c5c9cd;
+      --danger:#a13d3d;
+      --ok:#2f7152;
+      --radius:22px;
+      --raised: 10px 10px 22px var(--dark), -10px -10px 22px var(--light);
+      --soft: 6px 6px 14px var(--dark), -6px -6px 14px var(--light);
+      --inset: inset 5px 5px 10px var(--dark), inset -5px -5px 10px var(--light);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      min-height:100vh;
+      background:var(--bg);
+      color:var(--ink);
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    button,input,textarea{font:inherit}
+    .shell{width:min(1180px, calc(100% - 32px)); margin:0 auto; padding:38px 0 56px}
+    .masthead{display:grid;grid-template-columns:210px minmax(0,1fr);gap:34px;align-items:end;margin-bottom:30px}
+    .brand{padding:16px 18px 14px;border-radius:20px;box-shadow:var(--soft);text-align:center;background:var(--panel)}
+    .brand-script{font-family:"Brush Script MT","Segoe Script",cursive;font-size:54px;line-height:.9;letter-spacing:-2px}
+    .brand-sub{font-size:11px;letter-spacing:4px;font-weight:800;margin-top:12px}
+    .title-wrap{padding-bottom:4px}
+    h1{margin:0;font-family:Impact,"Arial Narrow",Haettenschweiler,sans-serif;font-size:clamp(42px,5.4vw,78px);line-height:.92;letter-spacing:.5px;font-weight:900;text-transform:uppercase;white-space:nowrap}
+    .rule{height:13px;border-radius:999px;background:var(--accent);margin-top:24px;box-shadow:var(--soft)}
+
+    .card{background:var(--panel);border-radius:var(--radius);box-shadow:var(--raised);padding:28px;margin-top:26px}
+    .section-title{font-size:13px;text-transform:uppercase;letter-spacing:2.4px;font-weight:900;margin:0 0 18px;color:#484348}
+    .top-fields{display:grid;grid-template-columns:1.1fr .8fr .8fr;gap:18px}
+    .field label{display:block;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;font-weight:800;margin:0 0 9px;color:var(--muted)}
+    input,textarea{
+      width:100%;border:0;outline:0;border-radius:15px;background:var(--panel);box-shadow:var(--inset);color:var(--ink);padding:15px 16px;
+    }
+    input:focus,textarea:focus{outline:2px solid rgba(47,43,46,.16)}
+    textarea{min-height:96px;resize:vertical}
+
+    .item-builder{display:grid;grid-template-columns:minmax(0,1fr) 130px 150px;gap:16px;align-items:start}
+    .item-builder .btn{margin-top:28px;height:48px}
+    .search-wrap{position:relative}
+    .suggestions{position:absolute;z-index:30;left:0;right:0;top:calc(100% + 10px);display:none;max-height:340px;overflow:auto;padding:10px;border-radius:18px;background:var(--panel);box-shadow:var(--raised)}
+    .suggestions.open{display:block}
+    .suggestion{padding:13px 14px;border-radius:13px;cursor:pointer}
+    .suggestion:hover,.suggestion.active{box-shadow:var(--inset)}
+    .suggestion strong{display:block;font-size:15px}
+    .suggestion small{display:block;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .empty-suggest{padding:15px;color:var(--muted);font-size:14px}
+
+    .btn{border:0;border-radius:15px;background:var(--panel);box-shadow:var(--soft);padding:15px 18px;font-weight:900;letter-spacing:.4px;cursor:pointer;color:var(--ink);transition:.15s transform,.15s box-shadow}
+    .btn:hover{transform:translateY(-1px)}
+    .btn:active{box-shadow:var(--inset);transform:translateY(0)}
+    .btn.primary{background:var(--accent);color:white;box-shadow:7px 7px 15px #bfc2c6,-7px -7px 15px #fff}
+    .btn.ghost{padding:8px 10px;font-size:12px;color:var(--danger)}
+    .btn[disabled]{opacity:.55;cursor:not-allowed;transform:none}
+
+    .selected-preview{display:none;margin-top:14px;padding:12px 14px;border-radius:14px;box-shadow:var(--inset);font-size:13px;color:var(--muted)}
+    .selected-preview.show{display:block}
+    .selected-preview strong{color:var(--ink)}
+
+    .request-list{display:grid;gap:12px;margin-top:18px}
+    .request-row{display:grid;grid-template-columns:minmax(0,1fr) 95px 80px;gap:12px;align-items:center;padding:16px 17px;border-radius:17px;box-shadow:var(--soft)}
+    .request-row .name{font-weight:900}
+    .request-row .meta{font-size:12px;color:var(--muted);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .qty-pill{text-align:center;padding:10px;border-radius:12px;box-shadow:var(--inset);font-weight:900}
+    .empty-cart{padding:20px;border-radius:16px;box-shadow:var(--inset);color:var(--muted);text-align:center}
+
+    .footer-actions{display:flex;gap:14px;justify-content:flex-end;align-items:center;margin-top:24px;flex-wrap:wrap}
+    .status{margin-right:auto;min-height:22px;color:var(--muted);font-size:13px}
+    .status.ok{color:var(--ok);font-weight:800}.status.error{color:var(--danger);font-weight:800}
+    .catalog-state{font-size:12px;color:var(--muted);margin-top:9px}
+
+    .success-box{display:none;margin-top:20px;padding:18px;border-radius:17px;box-shadow:var(--inset);line-height:1.55}
+    .success-box.show{display:block}.success-box strong{display:block;font-size:17px;margin-bottom:4px}
+    .tiny{font-size:11px;color:var(--muted);line-height:1.5;margin-top:15px}
+
+    @media (max-width:820px){
+      .shell{width:min(100% - 22px,760px);padding-top:22px}
+      .masthead{grid-template-columns:1fr;gap:22px;align-items:stretch}
+      .brand{max-width:230px}
+      .masthead{grid-template-columns:150px minmax(0,1fr);gap:18px}
+      .brand{max-width:150px;padding:12px}
+      .brand-script{font-size:38px}
+      .brand-sub{font-size:8px;letter-spacing:2.4px;margin-top:8px}
+      h1{font-size:clamp(27px,7vw,54px)}
+      .top-fields,.item-builder{grid-template-columns:1fr}
+      .item-builder .btn{margin-top:0}
+      .request-row{grid-template-columns:1fr 70px 64px}
+      .card{padding:22px 18px}
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="masthead">
+      <div class="brand" aria-label="Katrina Coffee & Cakes">
+        <div class="brand-script">Katrina</div>
+        <div class="brand-sub">COFFEE &amp; CAKES</div>
+      </div>
+      <div class="title-wrap">
+        <h1>Frozen Sticker Request</h1>
+        <div class="rule"></div>
+      </div>
+    </header>
+
+    <section class="card">
+      <h2 class="section-title">Request details</h2>
+      <div class="top-fields">
+        <div class="field">
+          <label for="productionDate">Production date</label>
+          <input id="productionDate" type="date" required />
+        </div>
+        <div class="field">
+          <label for="requesterName">Requested by</label>
+          <input id="requesterName" type="text" autocomplete="name" placeholder="Full name" required />
+        </div>
+        <div class="field">
+          <label for="department">Department / Location</label>
+          <input id="department" type="text" placeholder="e.g. Production" required />
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 class="section-title">Add requested items</h2>
+      <div class="item-builder">
+        <div class="field search-wrap">
+          <label for="itemSearch">Item name</label>
+          <input id="itemSearch" type="search" autocomplete="off" placeholder="Start typing an item name…" />
+          <div id="suggestions" class="suggestions" role="listbox" aria-label="Item suggestions"></div>
+        </div>
+        <div class="field">
+          <label for="itemQty">Qty</label>
+          <input id="itemQty" type="number" min="1" step="1" value="1" />
+        </div>
+        <button id="addItemBtn" class="btn" type="button" disabled>Add item</button>
+      </div>
+      <div id="catalogState" class="catalog-state">Loading items from Google Sheet…</div>
+      <div id="selectedPreview" class="selected-preview"></div>
+
+      <div id="requestList" class="request-list">
+        <div class="empty-cart">No items added yet.</div>
+      </div>
+
+      <div class="footer-actions">
+        <div id="submitStatus" class="status" aria-live="polite"></div>
+        <button id="clearBtn" class="btn" type="button">Clear</button>
+        <button id="submitBtn" class="btn primary" type="button">Submit request</button>
+      </div>
+
+      <div id="successBox" class="success-box" aria-live="polite"></div>
+      <div class="tiny">Items are loaded from the Google Sheet tab named <strong>Items</strong>. Submitted lines are saved to <strong>Request Sheet</strong>, and the configured PIC receives an email notification.</div>
+    </section>
+  </main>
+
+  <script>
+    /* ================================================================
+       REQUIRED CONFIGURATION
+       1) Deploy the included Apps Script as a Web App.
+       2) Paste its /exec URL below.
+       Example: https://script.google.com/macros/s/AKfycb.../exec
+       ================================================================ */
+    const APPS_SCRIPT_URL = 'PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE';
+
+    const $ = (id) => document.getElementById(id);
+    const els = {
+      productionDate: $('productionDate'), requesterName: $('requesterName'), department: $('department'),
+      itemSearch: $('itemSearch'), itemQty: $('itemQty'), suggestions: $('suggestions'),
+      catalogState: $('catalogState'), addItemBtn: $('addItemBtn'), selectedPreview: $('selectedPreview'),
+      requestList: $('requestList'), submitBtn: $('submitBtn'), clearBtn: $('clearBtn'),
+      submitStatus: $('submitStatus'), successBox: $('successBox')
+    };
+
+    let catalog = [];
+    let selectedCatalogItem = null;
+    let requestItems = [];
+    let activeSuggestion = -1;
+
+    function isConfigured(){ return /^https:\/\/script\.google\.com\/macros\/s\/.+\/exec/.test(APPS_SCRIPT_URL); }
+    function esc(v=''){ return String(v).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
+    function setStatus(text='', type=''){ els.submitStatus.textContent=text; els.submitStatus.className='status'+(type?' '+type:''); }
+    function createRequestId(){
+      if (window.crypto?.randomUUID) return crypto.randomUUID();
+      return 'REQ-'+Date.now()+'-'+Math.random().toString(36).slice(2,10).toUpperCase();
+    }
+
+    function jsonp(action, params={}){
+      return new Promise((resolve,reject)=>{
+        if(!isConfigured()) return reject(new Error('Apps Script URL is not configured.'));
+        const cb='__fsr_cb_'+Date.now()+'_'+Math.random().toString(36).slice(2);
+        const script=document.createElement('script');
+        const timer=setTimeout(()=>cleanup(new Error('Google Sheet connection timed out.')),12000);
+        function cleanup(err, data){ clearTimeout(timer); delete window[cb]; script.remove(); err?reject(err):resolve(data); }
+        window[cb]=(data)=>cleanup(null,data);
+        script.onerror=()=>cleanup(new Error('Could not reach Google Apps Script.'));
+        const qs=new URLSearchParams({action,callback:cb,_:Date.now(),...params});
+        script.src=APPS_SCRIPT_URL+'?'+qs.toString();
+        document.head.appendChild(script);
+      });
+    }
+
+    async function loadCatalog(){
+      if(!isConfigured()){
+        els.catalogState.innerHTML='Setup needed: paste your Apps Script <strong>/exec</strong> URL into <code>APPS_SCRIPT_URL</code> in index.html.';
+        return;
+      }
+      try{
+        const data=await jsonp('items');
+        if(!data?.ok) throw new Error(data?.error || 'Unable to load Items sheet.');
+        catalog=(data.items||[]).map(x=>({...x,__name:String(x.__name||'').trim()})).filter(x=>x.__name);
+        els.catalogState.textContent=`${catalog.length} item${catalog.length===1?'':'s'} loaded from Items.`;
+      }catch(err){
+        els.catalogState.textContent=err.message;
+      }
+    }
+
+    function itemMeta(item){
+      if(!item) return '';
+      const skip=new Set(['__name','__row','__search']);
+      return Object.entries(item)
+        .filter(([k,v])=>!skip.has(k) && String(v??'').trim() && String(v).trim()!==item.__name)
+        .slice(0,3).map(([k,v])=>`${k}: ${v}`).join(' · ');
+    }
+
+    function showSuggestions(){
+      const q=els.itemSearch.value.trim().toLowerCase();
+      selectedCatalogItem=null; els.addItemBtn.disabled=true; activeSuggestion=-1;
+      els.selectedPreview.classList.remove('show'); els.selectedPreview.innerHTML='';
+      if(!q){ els.suggestions.classList.remove('open'); return; }
+      const matches=catalog.filter(x=>x.__search.includes(q)).slice(0,12);
+      els.suggestions.innerHTML='';
+      if(!matches.length){ els.suggestions.innerHTML='<div class="empty-suggest">No matching item found.</div>'; }
+      else matches.forEach((item,i)=>{
+        const div=document.createElement('div');
+        div.className='suggestion'; div.dataset.index=i; div.setAttribute('role','option');
+        div.innerHTML=`<strong>${esc(item.__name)}</strong>${itemMeta(item)?`<small>${esc(itemMeta(item))}</small>`:''}`;
+        div.addEventListener('click',()=>selectItem(item));
+        els.suggestions.appendChild(div);
+      });
+      els.suggestions.classList.add('open');
+    }
+
+    function selectItem(item){
+      selectedCatalogItem=item;
+      els.itemSearch.value=item.__name;
+      els.suggestions.classList.remove('open');
+      els.addItemBtn.disabled=false;
+      const meta=itemMeta(item);
+      els.selectedPreview.innerHTML=`Selected: <strong>${esc(item.__name)}</strong>${meta?` — ${esc(meta)}`:''}`;
+      els.selectedPreview.classList.add('show');
+    }
+
+    function moveSuggestion(step){
+      const nodes=[...els.suggestions.querySelectorAll('.suggestion')];
+      if(!nodes.length) return;
+      activeSuggestion=(activeSuggestion+step+nodes.length)%nodes.length;
+      nodes.forEach((n,i)=>n.classList.toggle('active',i===activeSuggestion));
+      nodes[activeSuggestion].scrollIntoView({block:'nearest'});
+    }
+
+    function addItem(){
+      const qty=Math.max(1,parseInt(els.itemQty.value,10)||1);
+      if(!selectedCatalogItem){ setStatus('Choose an item from the suggestions first.','error'); return; }
+      const existing=requestItems.find(x=>x.item.__row===selectedCatalogItem.__row);
+      if(existing) existing.qty+=qty; else requestItems.push({item:selectedCatalogItem,qty});
+      els.itemSearch.value=''; els.itemQty.value='1'; selectedCatalogItem=null; els.addItemBtn.disabled=true;
+      els.selectedPreview.classList.remove('show'); els.suggestions.classList.remove('open'); setStatus('');
+      renderRequestItems(); els.itemSearch.focus();
+    }
+
+    function renderRequestItems(){
+      if(!requestItems.length){ els.requestList.innerHTML='<div class="empty-cart">No items added yet.</div>'; return; }
+      els.requestList.innerHTML='';
+      requestItems.forEach((entry,idx)=>{
+        const row=document.createElement('div'); row.className='request-row';
+        row.innerHTML=`<div><div class="name">${esc(entry.item.__name)}</div><div class="meta">${esc(itemMeta(entry.item)||'Item from Google Sheet')}</div></div><div class="qty-pill">Qty ${entry.qty}</div><button class="btn ghost" type="button">Remove</button>`;
+        row.querySelector('button').addEventListener('click',()=>{requestItems.splice(idx,1);renderRequestItems();});
+        els.requestList.appendChild(row);
+      });
+    }
+
+    function validateForm(){
+      if(!els.productionDate.value) return 'Choose a production date.';
+      if(!els.requesterName.value.trim()) return 'Enter the requester name.';
+      if(!els.department.value.trim()) return 'Enter a department / location.';
+      if(!requestItems.length) return 'Add at least one requested item.';
+      return '';
+    }
+
+    async function verifyReceipt(requestId){
+      for(let i=0;i<7;i++){
+        await new Promise(r=>setTimeout(r,900+i*250));
+        try{
+          const data=await jsonp('status',{requestId});
+          if(data?.found) return data;
+        }catch(_){ /* retry */ }
+      }
+      return null;
+    }
+
+    async function submitRequest(){
+      const invalid=validateForm(); if(invalid){setStatus(invalid,'error');return;}
+      if(!isConfigured()){setStatus('Apps Script URL is not configured yet.','error');return;}
+
+      const requestId=createRequestId();
+      const payload={
+        requestId,
+        productionDate:els.productionDate.value,
+        requesterName:els.requesterName.value.trim(),
+        department:els.department.value.trim(),
+        requesterEmail:'',
+        reference:'',
+        notes:'',
+        items:requestItems.map(x=>({row:x.item.__row,name:x.item.__name,qty:x.qty}))
+      };
+
+      els.submitBtn.disabled=true; els.clearBtn.disabled=true; setStatus('Submitting request…'); els.successBox.classList.remove('show');
+      try{
+        const body=new URLSearchParams({payload:JSON.stringify(payload)});
+        await fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',body});
+        setStatus('Saving to Request Sheet…');
+        const receipt=await verifyReceipt(requestId);
+        if(!receipt) throw new Error('The request could not be confirmed. Check the Apps Script deployment and execution log.');
+
+        const emailText=receipt.emailStatus==='SENT'
+          ? 'PIC email notification sent.'
+          : receipt.emailStatus==='NOT_CONFIGURED'
+            ? 'Request saved, but PIC email is not configured yet.'
+            : receipt.emailStatus?.startsWith('FAILED')
+              ? 'Request saved, but the PIC email failed. Check Apps Script logs.'
+              : 'Request saved.';
+
+        setStatus('Request submitted successfully.','ok');
+        els.successBox.innerHTML=`<strong>Request submitted</strong>Request ID: <b>${esc(requestId)}</b><br>${esc(emailText)}`;
+        els.successBox.classList.add('show');
+        clearForm(false);
+      }catch(err){ setStatus(err.message || 'Submission failed.','error'); }
+      finally{ els.submitBtn.disabled=false; els.clearBtn.disabled=false; }
+    }
+
+    function clearForm(clearSuccess=true){
+      els.itemSearch.value=''; els.itemQty.value='1';
+      requestItems=[]; selectedCatalogItem=null; renderRequestItems(); els.selectedPreview.classList.remove('show');
+      if(clearSuccess){els.successBox.classList.remove('show');setStatus('');}
+    }
+
+    els.itemSearch.addEventListener('input',showSuggestions);
+    els.itemSearch.addEventListener('keydown',(e)=>{
+      if(e.key==='ArrowDown'){e.preventDefault();moveSuggestion(1)}
+      else if(e.key==='ArrowUp'){e.preventDefault();moveSuggestion(-1)}
+      else if(e.key==='Enter'){
+        const nodes=[...els.suggestions.querySelectorAll('.suggestion')];
+        if(activeSuggestion>=0&&nodes[activeSuggestion]){e.preventDefault();nodes[activeSuggestion].click();}
+        else if(selectedCatalogItem){e.preventDefault();addItem();}
+      } else if(e.key==='Escape'){els.suggestions.classList.remove('open')}
+    });
+    document.addEventListener('click',(e)=>{if(!e.target.closest('.search-wrap'))els.suggestions.classList.remove('open')});
+    els.addItemBtn.addEventListener('click',addItem);
+    els.submitBtn.addEventListener('click',submitRequest);
+    els.clearBtn.addEventListener('click',()=>clearForm(true));
+
+    els.productionDate.value=new Date().toISOString().slice(0,10);
+    loadCatalog();
+  </script>
+</body>
+</html>
