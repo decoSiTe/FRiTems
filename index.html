@@ -303,7 +303,7 @@
       els.requestList.innerHTML='';
       requestItems.forEach((entry,idx)=>{
         const row=document.createElement('div'); row.className='request-row';
-        row.innerHTML=`<div><div class="name">${esc(entry.item.__name)}</div><div class="meta">${esc(itemMeta(entry.item)||'Item from Google Sheet')}</div></div><div class="qty-pill">Qty ${entry.qty}</div><button class="btn ghost" type="button">Remove</button>`;
+        row.innerHTML=`<div><div class="name">${esc(entry.item.__name)}</div><div class="meta">${esc(itemMeta(entry.item)||'Item from Database')}</div></div><div class="qty-pill">Qty ${entry.qty}</div><button class="btn ghost" type="button">Remove</button>`;
         row.querySelector('button').addEventListener('click',()=>{requestItems.splice(idx,1);renderRequestItems();});
         els.requestList.appendChild(row);
       });
