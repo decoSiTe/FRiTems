@@ -219,7 +219,7 @@
         if(!isConfigured()) return reject(new Error('Apps Script URL is not configured.'));
         const cb='__fsr_cb_'+Date.now()+'_'+Math.random().toString(36).slice(2);
         const script=document.createElement('script');
-        const timer=setTimeout(()=>cleanup(new Error('Google Sheet connection timed out.')),12000);
+        const timer=setTimeout(()=>cleanup(new Error('Database connection timed out.')),12000);
         function cleanup(err, data){ clearTimeout(timer); delete window[cb]; script.remove(); err?reject(err):resolve(data); }
         window[cb]=(data)=>cleanup(null,data);
         script.onerror=()=>cleanup(new Error('Could not reach Google Apps Script.'));
