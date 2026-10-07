@@ -163,7 +163,7 @@
       </div>
 
       <div id="successBox" class="success-box" aria-live="polite"></div>
-      <div class="tiny">Items are loaded from the Google Sheet tab named <strong>Items</strong>. Submitted lines are saved to <strong>Request Sheet</strong>, and the configured PIC receives an email notification.</div>
+      <div class="tiny">Items are loaded from Database <strong>ITEMS</strong></div>
     </section>
   </main>
 
@@ -189,10 +189,26 @@
     let selectedCatalogItem = null;
     let requestItems = [];
     let activeSuggestion = -1;
+    let submissionMessageTimer = null;
 
     function isConfigured(){ return /^https:\/\/script\.google\.com\/macros\/s\/.+\/exec/.test(APPS_SCRIPT_URL); }
     function esc(v=''){ return String(v).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
     function setStatus(text='', type=''){ els.submitStatus.textContent=text; els.submitStatus.className='status'+(type?' '+type:''); }
+    function hideSubmissionMessages(){
+      if(submissionMessageTimer){ clearTimeout(submissionMessageTimer); submissionMessageTimer=null; }
+      setStatus('');
+      els.successBox.classList.remove('show');
+      els.successBox.innerHTML='';
+    }
+    function autoHideSubmissionMessages(delay=5000){
+      if(submissionMessageTimer) clearTimeout(submissionMessageTimer);
+      submissionMessageTimer=setTimeout(()=>{
+        setStatus('');
+        els.successBox.classList.remove('show');
+        els.successBox.innerHTML='';
+        submissionMessageTimer=null;
+      },delay);
+    }
     function createRequestId(){
       if (window.crypto?.randomUUID) return crypto.randomUUID();
       return 'REQ-'+Date.now()+'-'+Math.random().toString(36).slice(2,10).toUpperCase();
@@ -325,7 +341,8 @@
         items:requestItems.map(x=>({row:x.item.__row,name:x.item.__name,qty:x.qty}))
       };
 
-      els.submitBtn.disabled=true; els.clearBtn.disabled=true; setStatus('Submitting request…'); els.successBox.classList.remove('show');
+      if(submissionMessageTimer){ clearTimeout(submissionMessageTimer); submissionMessageTimer=null; }
+      els.submitBtn.disabled=true; els.clearBtn.disabled=true; setStatus('Submitting request…'); els.successBox.classList.remove('show'); els.successBox.innerHTML='';
       try{
         const body=new URLSearchParams({payload:JSON.stringify(payload)});
         await fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',body});
@@ -344,6 +361,7 @@
         setStatus('Request submitted successfully.','ok');
         els.successBox.innerHTML=`<strong>Request submitted</strong>Request ID: <b>${esc(requestId)}</b><br>${esc(emailText)}`;
         els.successBox.classList.add('show');
+        autoHideSubmissionMessages(5000);
         clearForm(false);
       }catch(err){ setStatus(err.message || 'Submission failed.','error'); }
       finally{ els.submitBtn.disabled=false; els.clearBtn.disabled=false; }
@@ -352,7 +370,7 @@
     function clearForm(clearSuccess=true){
       els.itemSearch.value=''; els.itemQty.value='1';
       requestItems=[]; selectedCatalogItem=null; renderRequestItems(); els.selectedPreview.classList.remove('show');
-      if(clearSuccess){els.successBox.classList.remove('show');setStatus('');}
+      if(clearSuccess){hideSubmissionMessages();}
     }
 
     els.itemSearch.addEventListener('input',showSuggestions);
