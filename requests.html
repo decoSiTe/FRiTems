@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#e9ecef" />
+  <title>Katrina — Frozen Sticker Requests</title>
+  <style>
+    :root{
+      --bg:#e9ecef;--panel:#e9ecef;--ink:#2f2b2e;--muted:#6f6b6e;--accent:#302b2f;
+      --light:#fff;--dark:#c5c9cd;--ok:#2f7152;--warn:#8a6520;--danger:#a13d3d;
+      --radius:22px;--raised:10px 10px 22px var(--dark),-10px -10px 22px var(--light);
+      --soft:6px 6px 14px var(--dark),-6px -6px 14px var(--light);
+      --inset:inset 5px 5px 10px var(--dark),inset -5px -5px 10px var(--light);
+    }
+    *{box-sizing:border-box} html{scroll-behavior:smooth}
+    body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    button,input,select{font:inherit}
+    .shell{width:min(1220px,calc(100% - 32px));margin:0 auto;padding:38px 0 56px}
+    .masthead{display:grid;grid-template-columns:190px minmax(0,1fr);gap:30px;align-items:end;margin-bottom:30px}
+    .brand{padding:16px 18px 14px;border-radius:20px;box-shadow:var(--soft);text-align:center;background:var(--panel)}
+    .brand-script{font-family:"Brush Script MT","Segoe Script",cursive;font-size:50px;line-height:.9;letter-spacing:-2px}
+    .brand-sub{font-size:10px;letter-spacing:3.6px;font-weight:800;margin-top:11px}
+    h1{margin:0;font-family:Impact,"Arial Narrow",Haettenschweiler,sans-serif;font-size:clamp(40px,5.2vw,72px);line-height:.92;letter-spacing:.5px;font-weight:900;text-transform:uppercase;white-space:nowrap}
+    .rule{height:12px;border-radius:999px;background:var(--accent);margin-top:22px;box-shadow:var(--soft)}
+    .topnav{display:flex;justify-content:flex-end;margin-top:13px}.topnav a{color:var(--ink);font-size:13px;font-weight:900;text-decoration:none;padding:9px 13px;border-radius:12px;box-shadow:var(--soft)}
+
+    .toolbar,.access,.request-card{background:var(--panel);border-radius:var(--radius);box-shadow:var(--raised)}
+    .access{padding:22px;margin-bottom:24px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:end}
+    .toolbar{padding:22px;margin-bottom:24px;display:grid;grid-template-columns:minmax(220px,1fr) 180px auto;gap:14px;align-items:end}
+    label{display:block;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;font-weight:900;color:var(--muted);margin:0 0 8px}
+    input,select{width:100%;border:0;outline:0;border-radius:14px;background:var(--panel);box-shadow:var(--inset);color:var(--ink);padding:14px 15px}
+    .btn{border:0;border-radius:14px;background:var(--panel);box-shadow:var(--soft);padding:14px 18px;font-weight:900;cursor:pointer;color:var(--ink);white-space:nowrap}
+    .btn:hover{transform:translateY(-1px)}.btn:active{box-shadow:var(--inset);transform:none}.btn[disabled]{opacity:.55;cursor:not-allowed;transform:none}
+    .btn.primary{background:var(--accent);color:#fff}.btn.printed{color:var(--ok)}
+    .statusline{font-size:13px;color:var(--muted);margin:0 0 20px}
+    .access-message{grid-column:1/-1;font-size:13px;color:var(--muted);min-height:18px}.access-message.error{color:var(--danger);font-weight:800}.statusline.error{color:var(--danger);font-weight:800}.statusline.ok{color:var(--ok);font-weight:800}
+
+    .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:0 0 24px}
+    .stat{padding:18px 20px;border-radius:18px;box-shadow:var(--soft)}.stat b{display:block;font-size:28px}.stat span{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;font-weight:800}
+    .grid{display:grid;gap:20px}.request-card{padding:22px}
+    .card-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:start}
+    .request-id{font-weight:900;font-size:17px;word-break:break-all}.meta{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:8px;color:var(--muted);font-size:13px}.meta strong{color:var(--ink)}
+    .status-pill{display:inline-flex;align-items:center;justify-content:center;min-width:92px;padding:9px 13px;border-radius:999px;box-shadow:var(--inset);font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.7px}
+    .status-pill.pending{color:var(--warn)}.status-pill.printed{color:var(--ok)}
+    .items{margin-top:18px;border-radius:16px;box-shadow:var(--inset);overflow:hidden}
+    .item{display:grid;grid-template-columns:minmax(0,1fr) 90px;gap:12px;padding:12px 15px;border-bottom:1px solid rgba(47,43,46,.08)}.item:last-child{border-bottom:0}.item .qty{text-align:right;font-weight:900}
+    .card-actions{display:flex;gap:12px;align-items:center;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}.card-note{margin-right:auto;color:var(--muted);font-size:12px}
+    .empty{padding:36px;border-radius:20px;box-shadow:var(--inset);text-align:center;color:var(--muted)}
+    .hidden{display:none!important}
+
+    @media(max-width:820px){
+      .shell{width:min(100% - 22px,760px);padding-top:22px}.masthead{grid-template-columns:135px minmax(0,1fr);gap:16px}.brand{padding:11px}.brand-script{font-size:34px}.brand-sub{font-size:7px;letter-spacing:2px}h1{font-size:clamp(25px,7vw,48px)}
+      .toolbar,.access{grid-template-columns:1fr}.summary{grid-template-columns:1fr 1fr 1fr;gap:10px}.stat{padding:13px}.stat b{font-size:22px}.card-head{grid-template-columns:1fr}.status-pill{justify-self:start}.item{grid-template-columns:1fr 60px}
+    }
+    @media(max-width:520px){.summary{grid-template-columns:1fr}.masthead{grid-template-columns:1fr}.brand{max-width:150px}.topnav{justify-content:flex-start}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="masthead">
+      <div class="brand" aria-label="Katrina Coffee & Cakes">
+        <div class="brand-script">Katrina</div><div class="brand-sub">COFFEE &amp; CAKES</div>
+      </div>
+      <div>
+        <h1>Frozen Sticker Requests</h1><div class="rule"></div>
+        <div class="topnav"><a href="index.html">+ New request</a></div>
+      </div>
+    </header>
+
+    <section id="accessBox" class="access">
+      <div>
+        <label for="adminKey">Staff access key</label>
+        <input id="adminKey" type="password" autocomplete="current-password" placeholder="Enter staff access key" />
+      </div>
+      <button id="unlockBtn" class="btn primary" type="button">Open requests</button>
+      <div id="accessMessage" class="access-message"></div>
+    </section>
+
+    <section id="dashboard" class="hidden">
+      <div class="toolbar">
+        <div><label for="searchBox">Search requests</label><input id="searchBox" type="search" placeholder="Request ID, requester, department or item…" /></div>
+        <div><label for="statusFilter">Status</label><select id="statusFilter"><option value="All">All</option><option value="Pending">Pending</option><option value="Printed">Printed</option></select></div>
+        <button id="refreshBtn" class="btn" type="button">Refresh</button>
+      </div>
+
+      <div id="statusLine" class="statusline"></div>
+      <div class="summary">
+        <div class="stat"><b id="totalCount">0</b><span>Total requests</span></div>
+        <div class="stat"><b id="pendingCount">0</b><span>Pending</span></div>
+        <div class="stat"><b id="printedCount">0</b><span>Printed</span></div>
+      </div>
+      <div id="requestGrid" class="grid"></div>
+    </section>
+  </main>
+
+  <script>
+    // Use the SAME Apps Script /exec URL as index.html.
+    const APPS_SCRIPT_URL = 'PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE';
+
+    const $=id=>document.getElementById(id);
+    const els={
+      accessBox:$('accessBox'),adminKey:$('adminKey'),unlockBtn:$('unlockBtn'),accessMessage:$('accessMessage'),dashboard:$('dashboard'),
+      searchBox:$('searchBox'),statusFilter:$('statusFilter'),refreshBtn:$('refreshBtn'),statusLine:$('statusLine'),
+      totalCount:$('totalCount'),pendingCount:$('pendingCount'),printedCount:$('printedCount'),requestGrid:$('requestGrid')
+    };
+    let requests=[];
+    let staffKey=sessionStorage.getItem('fsrStaffKey')||'';
+
+    function isConfigured(){return /^https:\/\/script\.google\.com\/macros\/s\/.+\/exec(?:\?.*)?$/.test(APPS_SCRIPT_URL)}
+    function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+    function setLine(text='',type=''){els.statusLine.textContent=text;els.statusLine.className='statusline'+(type?' '+type:'')}
+    function setAccessMessage(text='',type=''){els.accessMessage.textContent=text;els.accessMessage.className='access-message'+(type?' '+type:'')}
+    function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+
+    function jsonp(action,params={}){
+      return new Promise((resolve,reject)=>{
+        if(!isConfigured()) return reject(new Error('Apps Script URL is not configured in requests.html.'));
+        const cb='__fsr_dash_'+Date.now()+'_'+Math.random().toString(36).slice(2);
+        const script=document.createElement('script');
+        const timer=setTimeout(()=>cleanup(new Error('Google Apps Script connection timed out.')),15000);
+        function cleanup(err,data){clearTimeout(timer);delete window[cb];script.remove();err?reject(err):resolve(data)}
+        window[cb]=data=>cleanup(null,data);script.onerror=()=>cleanup(new Error('Could not reach Google Apps Script.'));
+        const qs=new URLSearchParams({action,callback:cb,_:Date.now(),...params});
+        script.src=APPS_SCRIPT_URL+'?'+qs.toString();document.head.appendChild(script);
+      });
+    }
+
+    async function postPayload(payload){
+      const body=new URLSearchParams({payload:JSON.stringify(payload)});
+      await fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',body});
+    }
+
+    async function unlock(){
+      const key=els.adminKey.value.trim()||staffKey;
+      if(!key){setAccessMessage('Enter the staff access key.','error');return}
+      staffKey=key;els.unlockBtn.disabled=true;setAccessMessage('Loading requests…');
+      try{
+        await loadRequests(true);
+        sessionStorage.setItem('fsrStaffKey',staffKey);
+        setAccessMessage('');els.accessBox.classList.add('hidden');els.dashboard.classList.remove('hidden');setLine('Requests loaded.','ok');
+        setTimeout(()=>setLine(''),2500);
+      }catch(err){sessionStorage.removeItem('fsrStaffKey');staffKey='';setAccessMessage(err.message||'Could not open requests.','error')}
+      finally{els.unlockBtn.disabled=false}
+    }
+
+    async function loadRequests(skipRender=false){
+      const data=await jsonp('requests',{adminKey:staffKey});
+      if(!data?.ok) throw new Error(data?.error||'Unable to load requests.');
+      requests=Array.isArray(data.requests)?data.requests:[];
+      if(!skipRender) setLine('Updated just now.','ok');
+      render();
+      if(!skipRender) setTimeout(()=>setLine(''),1800);
+    }
+
+    function render(){
+      const q=els.searchBox.value.trim().toLowerCase();const f=els.statusFilter.value;
+      const pending=requests.filter(r=>r.status!=='Printed').length;const printed=requests.filter(r=>r.status==='Printed').length;
+      els.totalCount.textContent=requests.length;els.pendingCount.textContent=pending;els.printedCount.textContent=printed;
+
+      const filtered=requests.filter(r=>{
+        if(f!=='All'&&r.status!==f) return false;
+        if(!q) return true;
+        const hay=[r.requestId,r.productionDate,r.requesterName,r.department,r.status,...(r.items||[]).map(i=>i.name)].join(' ').toLowerCase();
+        return hay.includes(q);
+      });
+
+      if(!filtered.length){els.requestGrid.innerHTML='<div class="empty">No matching requests.</div>';return}
+      els.requestGrid.innerHTML='';
+      filtered.forEach(r=>els.requestGrid.appendChild(buildCard(r)));
+    }
+
+    function buildCard(r){
+      const card=document.createElement('article');card.className='request-card';
+      const status=r.status==='Printed'?'Printed':'Pending';
+      const items=(r.items||[]).map(i=>`<div class="item"><div>${esc(i.name)}</div><div class="qty">Qty ${esc(i.quantity)}</div></div>`).join('');
+      const printedNote=status==='Printed' ? `Printed${r.printedAt?` · ${esc(r.printedAt)}`:''}${r.printedEmailStatus?` · Email ${esc(r.printedEmailStatus)}`:''}` : 'Waiting to be printed';
+      const actionText=status==='Printed'?'Set back to Pending':'Mark as Printed';
+      const nextStatus=status==='Printed'?'Pending':'Printed';
+      card.innerHTML=`
+        <div class="card-head">
+          <div><div class="request-id">${esc(r.requestId)}</div><div class="meta"><span><strong>Production:</strong> ${esc(r.productionDate||'—')}</span><span><strong>Requested by:</strong> ${esc(r.requesterName||'—')}</span><span><strong>Location:</strong> ${esc(r.department||'—')}</span></div></div>
+          <div class="status-pill ${status.toLowerCase()}">${status}</div>
+        </div>
+        <div class="items">${items||'<div class="item"><div>No items</div><div></div></div>'}</div>
+        <div class="card-actions"><div class="card-note">${printedNote}</div><button class="btn ${status==='Pending'?'primary':'printed'}" type="button">${actionText}</button></div>`;
+      card.querySelector('button').addEventListener('click',()=>changeStatus(r.requestId,nextStatus,card.querySelector('button')));
+      return card;
+    }
+
+    async function changeStatus(requestId,status,button){
+      const message=status==='Printed'
+        ? 'Mark this request as Printed? The PIC will receive an email notification.'
+        : 'Set this request back to Pending?';
+      if(!confirm(message)) return;
+      button.disabled=true;setLine(status==='Printed'?'Marking as Printed and sending PIC email…':'Updating status…');
+      try{
+        await postPayload({action:'updateStatus',adminKey:staffKey,requestId,status});
+        await sleep(900);
+        await loadRequests(true);
+        const updated=requests.find(r=>r.requestId===requestId);
+        if(!updated||updated.status!==status) throw new Error('Status change could not be confirmed. Refresh and try again.');
+        setLine(status==='Printed'?'Status changed to Printed. PIC email notification processed.':'Status changed to Pending.','ok');
+        setTimeout(()=>setLine(''),3500);
+      }catch(err){setLine(err.message||'Status update failed.','error')}
+      finally{button.disabled=false}
+    }
+
+    els.unlockBtn.addEventListener('click',unlock);
+    els.adminKey.addEventListener('keydown',e=>{if(e.key==='Enter')unlock()});
+    els.refreshBtn.addEventListener('click',async()=>{els.refreshBtn.disabled=true;setLine('Refreshing…');try{await loadRequests()}catch(err){setLine(err.message,'error')}finally{els.refreshBtn.disabled=false}});
+    els.searchBox.addEventListener('input',render);els.statusFilter.addEventListener('change',render);
+
+    if(staffKey){els.adminKey.value=staffKey;unlock()}
+    else if(!isConfigured()) setAccessMessage('Setup needed: paste your Apps Script /exec URL into requests.html.','error');
+  </script>
+</body>
+</html>
