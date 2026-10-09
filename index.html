@@ -37,7 +37,13 @@
     .brand-script{font-family:"Brush Script MT","Segoe Script",cursive;font-size:54px;line-height:.9;letter-spacing:-2px}
     .brand-sub{font-size:11px;letter-spacing:4px;font-weight:800;margin-top:12px}
     .title-wrap{padding-bottom:4px}
-    h1{margin:0;font-family:Impact,"Arial Narrow",Haettenschweiler,sans-serif;font-size:clamp(42px,5.4vw,78px);line-height:.92;letter-spacing:.5px;font-weight:900;text-transform:uppercase;white-space:nowrap}
+    .title-line{display:flex;align-items:center;justify-content:space-between;gap:18px}
+    h1{margin:0;min-width:0;font-family:Impact,"Arial Narrow",Haettenschweiler,sans-serif;font-size:clamp(42px,5.4vw,78px);line-height:.92;letter-spacing:.5px;font-weight:900;text-transform:uppercase;white-space:nowrap}
+    .request-bell{position:relative;flex:0 0 auto;width:54px;height:54px;display:grid;place-items:center;border:0;border-radius:16px;background:var(--panel);box-shadow:var(--soft);color:var(--ink);text-decoration:none;transition:.15s transform,.15s box-shadow}
+    .request-bell:hover{transform:translateY(-1px)}
+    .request-bell:active{box-shadow:var(--inset);transform:translateY(0)}
+    .request-bell svg{width:25px;height:25px;display:block}
+    .request-count{position:absolute;top:-7px;right:-7px;min-width:24px;height:24px;padding:0 6px;display:flex;align-items:center;justify-content:center;border:3px solid var(--bg);border-radius:999px;background:var(--accent);color:#fff;font-size:11px;line-height:1;font-weight:900;box-shadow:3px 3px 8px rgba(47,43,46,.18)}
     .rule{height:13px;border-radius:999px;background:var(--accent);margin-top:24px;box-shadow:var(--soft)}
 
     .card{background:var(--panel);border-radius:var(--radius);box-shadow:var(--raised);padding:28px;margin-top:26px}
@@ -87,7 +93,6 @@
     .success-box{display:none;margin-top:20px;padding:18px;border-radius:17px;box-shadow:var(--inset);line-height:1.55}
     .success-box.show{display:block}.success-box strong{display:block;font-size:17px;margin-bottom:4px}
     .tiny{font-size:11px;color:var(--muted);line-height:1.5;margin-top:15px}
-    .view-requests{display:inline-block;margin-top:10px;color:var(--ink);font-size:12px;font-weight:900;text-decoration:none;padding:8px 11px;border-radius:11px;box-shadow:var(--soft)}
 
     @media (max-width:820px){
       .shell{width:min(100% - 22px,760px);padding-top:22px}
@@ -98,6 +103,10 @@
       .brand-script{font-size:38px}
       .brand-sub{font-size:8px;letter-spacing:2.4px;margin-top:8px}
       h1{font-size:clamp(27px,7vw,54px)}
+      .title-line{gap:10px}
+      .request-bell{width:44px;height:44px;border-radius:14px}
+      .request-bell svg{width:21px;height:21px}
+      .request-count{top:-6px;right:-6px;min-width:22px;height:22px;font-size:10px}
       .top-fields,.item-builder{grid-template-columns:1fr}
       .item-builder .btn{margin-top:0}
       .request-row{grid-template-columns:1fr 70px 64px}
@@ -113,7 +122,13 @@
         <div class="brand-sub">COFFEE &amp; CAKES</div>
       </div>
       <div class="title-wrap">
-        <h1>Frozen Sticker Request</h1>
+        <div class="title-line">
+          <h1>Frozen Sticker Request</h1>
+          <a id="requestBell" class="request-bell" href="requests.html" aria-label="View pending requests" title="View pending requests">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span id="requestCount" class="request-count" aria-label="0 pending requests">0</span>
+          </a>
+        </div>
         <div class="rule"></div>
       </div>
     </header>
@@ -164,7 +179,7 @@
       </div>
 
       <div id="successBox" class="success-box" aria-live="polite"></div>
-      <div class="tiny">Items are loaded from the Google Sheet tab named <strong>Items</strong>. Submitted lines are saved to <strong>Request Sheet</strong>, and the configured PIC receives an email notification.<br><a class="view-requests" href="requests.html">View requests</a></div>
+      <div class="tiny">Items are loaded from the Google Sheet tab named <strong>Items</strong>. Submitted lines are saved to <strong>Request Sheet</strong>, and the configured PIC receives an email notification.</div>
     </section>
   </main>
 
@@ -183,7 +198,7 @@
       itemSearch: $('itemSearch'), itemQty: $('itemQty'), suggestions: $('suggestions'),
       catalogState: $('catalogState'), addItemBtn: $('addItemBtn'), selectedPreview: $('selectedPreview'),
       requestList: $('requestList'), submitBtn: $('submitBtn'), clearBtn: $('clearBtn'),
-      submitStatus: $('submitStatus'), successBox: $('successBox')
+      submitStatus: $('submitStatus'), successBox: $('successBox'), requestCount: $('requestCount')
     };
 
     let catalog = [];
@@ -243,6 +258,19 @@
       }catch(err){
         els.catalogState.textContent=err.message;
       }
+    }
+
+    async function loadPendingCount(){
+      if(!isConfigured() || !els.requestCount) return;
+      try{
+        const data=await jsonp('pendingcount');
+        if(!data?.ok) return;
+        const count=Math.max(0,Number(data.count)||0);
+        els.requestCount.textContent=count>99?'99+':String(count);
+        els.requestCount.setAttribute('aria-label',`${count} pending request${count===1?'':'s'}`);
+        const bell=document.getElementById('requestBell');
+        if(bell) bell.setAttribute('title',`${count} pending request${count===1?'':'s'} — view requests`);
+      }catch(_){ /* keep the last displayed count */ }
     }
 
     function itemMeta(item){
@@ -364,6 +392,7 @@
         els.successBox.classList.add('show');
         autoHideSubmissionMessages(5000);
         clearForm(false);
+        loadPendingCount();
       }catch(err){ setStatus(err.message || 'Submission failed.','error'); }
       finally{ els.submitBtn.disabled=false; els.clearBtn.disabled=false; }
     }
@@ -391,6 +420,9 @@
 
     els.productionDate.value=new Date().toISOString().slice(0,10);
     loadCatalog();
+    loadPendingCount();
+    setInterval(loadPendingCount, 30000);
+    document.addEventListener('visibilitychange',()=>{ if(!document.hidden) loadPendingCount(); });
   </script>
 </body>
 </html>
