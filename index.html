@@ -165,7 +165,7 @@
         </div>
         <button id="addItemBtn" class="btn" type="button" disabled>Add item</button>
       </div>
-      <div id="catalogState" class="catalog-state">Loading items from Google Sheet…</div>
+      <div id="catalogState" class="catalog-state">Loading items from Database…</div>
       <div id="selectedPreview" class="selected-preview"></div>
 
       <div id="requestList" class="request-list">
@@ -179,8 +179,7 @@
       </div>
 
       <div id="successBox" class="success-box" aria-live="polite"></div>
-      <div class="tiny">Items are loaded from the Google Sheet tab named <strong>Items</strong>. Submitted lines are saved to <strong>Request Sheet</strong>, and the configured PIC receives an email notification.</div>
-    </section>
+      <div class="tiny">Please Check all the required items before you <strong>SUBMIT</strong>. 
   </main>
 
   <script>
@@ -332,7 +331,7 @@
       els.requestList.innerHTML='';
       requestItems.forEach((entry,idx)=>{
         const row=document.createElement('div'); row.className='request-row';
-        row.innerHTML=`<div><div class="name">${esc(entry.item.__name)}</div><div class="meta">${esc(itemMeta(entry.item)||'Item from Google Sheet')}</div></div><div class="qty-pill">Qty ${entry.qty}</div><button class="btn ghost" type="button">Remove</button>`;
+        row.innerHTML=`<div><div class="name">${esc(entry.item.__name)}</div><div class="meta">${esc(itemMeta(entry.item)||'Item from Database')}</div></div><div class="qty-pill">Qty ${entry.qty}</div><button class="btn ghost" type="button">Remove</button>`;
         row.querySelector('button').addEventListener('click',()=>{requestItems.splice(idx,1);renderRequestItems();});
         els.requestList.appendChild(row);
       });
