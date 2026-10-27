@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="theme-color" content="#e9ecef" />print-btn
+  <meta name="theme-color" content="#e9ecef" />
   <title>Katrina — Frozen Sticker Requests</title>
   <style>
     :root{
@@ -175,7 +175,7 @@
       const status=r.status==='Printed'?'Printed':'Pending';
       const items=(r.items||[]).map(i=>`<div class="item"><div>${esc(i.name)}</div><div class="qty">Qty ${esc(i.quantity)}</div></div>`).join('');
       const printedNote=status==='Printed' ? `Printed${r.printedAt?` · ${esc(r.printedAt)}`:''}${r.printedEmailStatus?` · Email ${esc(r.printedEmailStatus)}`:''}` : 'Waiting to be printed';
-      const actionText=status==='Printed'?'Set back to Pending':'Mark as Printed';
+      const actionText=status==='Printed'?'Done Printing':'Mark as Printed';
       const nextStatus=status==='Printed'?'Pending':'Printed';
       card.innerHTML=`
         <div class="card-head">
