@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="theme-color" content="#e9ecef" />
+  <meta name="theme-color" content="#e9ecef" />print-btn
   <title>Katrina — Frozen Sticker Requests</title>
   <style>
     :root{
@@ -191,7 +191,7 @@
     async function changeStatus(requestId,status,button){
       const message=status==='Printed'
         ? 'Mark this request as Printed? The PIC will receive an email notification.'
-        : 'Set this request back to Pending?';
+        : 'Done Printing';
       if(!confirm(message)) return;
       button.disabled=true;setLine(status==='Printed'?'Marking as Printed and sending PIC email…':'Updating status…');
       try{
